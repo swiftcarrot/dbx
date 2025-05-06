@@ -1,6 +1,5 @@
 package schema
 
-// TODO: support extension version
 // EnableExtension adds an extension to the schema
 func (s *Schema) EnableExtension(name string) {
 	for _, ext := range s.Extensions {

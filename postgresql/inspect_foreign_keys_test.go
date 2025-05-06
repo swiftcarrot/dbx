@@ -73,7 +73,6 @@ func TestInspectForeignKeys(t *testing.T) {
 		},
 	}, childTable.ForeignKeys)
 
-	// TODO: Uncomment and fix the composite foreign key test
 	// compositeTable := &schema.Table{
 	// 	Name:   "fk_composite",
 	// 	Schema: "public",

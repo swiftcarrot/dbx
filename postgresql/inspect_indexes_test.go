@@ -53,7 +53,6 @@ func TestInspectIndexes(t *testing.T) {
 		{Name: "idx_test_email", Columns: []string{"email"}, Unique: true},
 		{Name: "idx_test_name", Columns: []string{"first_name", "last_name"}},
 		{Name: "idx_test_username", Unique: false, Columns: []string{"username"}},
-		// TODO: functional index support
 		// {Name: "idx_test_created_year", Unique: false, Columns: []string{"EXTRACT(YEAR FROM created_at)"}},
 	}, table.Indexes)
 }

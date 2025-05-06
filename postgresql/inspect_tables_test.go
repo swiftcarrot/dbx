@@ -11,7 +11,6 @@ func TestInspectTables(t *testing.T) {
 	db, err := testutil.GetPGTestConn()
 	require.NoError(t, err)
 
-	// TODO: support other schemas than public
 	_, err = db.Exec(`
 		CREATE TABLE test_table_1 (id serial PRIMARY KEY);
 		CREATE TABLE test_table_2 (id serial PRIMARY KEY);

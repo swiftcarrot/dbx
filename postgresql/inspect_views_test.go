@@ -52,7 +52,6 @@ func TestInspectViews(t *testing.T) {
 	s := schema.NewSchema()
 	err = pg.InspectViews(db, s)
 	require.NoError(t, err)
-	// TODO: make order of views consistent (postgres 15)
 	require.Equal(t, []*schema.View{
 		{
 			Schema:     "public",
