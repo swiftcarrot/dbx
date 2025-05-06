@@ -1,5 +1,9 @@
 # dbx
 
+> [!WARNING]
+> This project is in beta. The API is subject to changes and may break.
+
+
 [![Go Reference](https://pkg.go.dev/badge/github.com/swiftcarrot/dbx.svg)](https://pkg.go.dev/github.com/swiftcarrot/dbx)
 [![Go Report Card](https://goreportcard.com/badge/github.com/swiftcarrot/dbx)](https://goreportcard.com/report/github.com/swiftcarrot/dbx)
 [![CI Status](https://github.com/swiftcarrot/dbx/workflows/test/badge.svg)](https://github.com/swiftcarrot/dbx/actions)

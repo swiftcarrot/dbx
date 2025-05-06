@@ -9,6 +9,7 @@
 
 - Always use `github.com/stretchr/testify/require`
 - Avoid custom error messages
+- Avoid using `t.Run`, always write separated test functions
 - Avoid using multiple equality checks for a struct's fields, use `require.Equal` to compare the entire struct directly, for example:
     ```go
 	require.Equal(t, []*schema.View{
