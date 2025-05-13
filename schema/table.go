@@ -68,18 +68,24 @@ func (t *Table) ForeignKey(name string, columns []string, refTable string, refCo
 
 // Column represents a table column
 type Column struct {
-	Name      string
-	Type      string
-	Nullable  bool
-	Default   string
+	// Column name in the database
+	Name string
+	// SQL data type of the column
+	Type string
+	// Whether the column allows NULL values
+	Nullable bool
+	// Default value expression for the column
+	Default string
+	// The total number of digits (both before and after the decimal point).
 	Precision int
-	Scale     int
-	Comment   string
-
-	Identity      string
-	PrimaryKey    bool
+	// The number of digits after the decimal point.
+	Scale int
+	// Comment or description attached to the column
+	Comment string
+	// Whether the column auto-increments (like SERIAL or AUTO_INCREMENT)
 	AutoIncrement bool
-	Length        int
+	// Maximum length for varchar/char types
+	Limit int
 }
 
 // ColumnOption is a function type for column options

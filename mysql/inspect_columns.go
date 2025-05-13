@@ -68,12 +68,31 @@ func (my *MySQL) InspectColumns(db *sql.DB, table *schema.Table) error {
 			Name: name,
 		}
 
-		// Set type, using columnType which includes length/precision info
-		// rather than just dataType
-		column.Type = columnType
+		// Set the base type (without precision/scale/limit info)
+		column.Type = dataType
+
+		// Handle specific types
+		switch strings.ToLower(dataType) {
+		case "varchar", "char", "binary", "varbinary":
+			if charMaxLength.Valid {
+				column.Limit = int(charMaxLength.Int64)
+			}
+		case "decimal", "numeric":
+			if numericPrecision.Valid {
+				column.Precision = int(numericPrecision.Int64)
+			}
+			if numericScale.Valid {
+				column.Scale = int(numericScale.Int64)
+			}
+		}
 
 		// Set nullable
 		column.Nullable = isNullable == "YES"
+
+		// Handle auto increment
+		if strings.Contains(strings.ToLower(extra), "auto_increment") {
+			column.AutoIncrement = true
+		}
 
 		// Handle default value
 		if defaultValue.Valid {
@@ -86,11 +105,6 @@ func (my *MySQL) InspectColumns(db *sql.DB, table *schema.Table) error {
 			} else {
 				column.Default = value
 			}
-		}
-
-		// Handle auto-increment
-		if strings.Contains(extra, "auto_increment") {
-			column.Identity = "BY DEFAULT"
 		}
 
 		// Add the column to the table

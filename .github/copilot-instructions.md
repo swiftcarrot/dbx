@@ -4,6 +4,7 @@
 
 - Use the Go module `github.com/swiftcarrot/dbx`
 - Do not include comments in the code unless they are necessary to explain complex logic or non-obvious functionality
+- Do not create variables used only once
 
 ## Tests writing guidelines
 

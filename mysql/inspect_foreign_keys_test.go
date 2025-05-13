@@ -11,9 +11,8 @@ import (
 func TestInspectForeignKeys(t *testing.T) {
 	db, err := testutil.GetMySQLTestConn()
 	require.NoError(t, err)
-	defer db.Close()
 
-	setupSQL := `
+	_, err = db.Exec(`
 		CREATE TABLE users (
 			id INT PRIMARY KEY,
 			name VARCHAR(255)
@@ -34,8 +33,7 @@ func TestInspectForeignKeys(t *testing.T) {
 			CONSTRAINT fk_comments_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
 			CONSTRAINT fk_comments_posts FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 		);
-	`
-	_, err = db.Exec(setupSQL)
+	`)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_, err := db.Exec(`
@@ -56,20 +54,18 @@ func TestInspectForeignKeys(t *testing.T) {
 			{Name: "user_id", Type: "int"},
 		},
 	}
-
 	err = my.InspectForeignKeys(db, postsTable)
 	require.NoError(t, err)
-
-	expectedPostsFK := []*schema.ForeignKey{
+	require.Equal(t, []*schema.ForeignKey{
 		{
 			Name:       "fk_posts_users",
 			Columns:    []string{"user_id"},
 			RefTable:   "users",
 			RefColumns: []string{"id"},
 			OnDelete:   "CASCADE",
+			OnUpdate:   "NO ACTION",
 		},
-	}
-	require.Equal(t, expectedPostsFK, postsTable.ForeignKeys)
+	}, postsTable.ForeignKeys)
 
 	commentsTable := &schema.Table{
 		Name: "comments",
@@ -80,17 +76,16 @@ func TestInspectForeignKeys(t *testing.T) {
 			{Name: "post_id", Type: "int"},
 		},
 	}
-
 	err = my.InspectForeignKeys(db, commentsTable)
 	require.NoError(t, err)
-
-	expectedCommentsFKs := []*schema.ForeignKey{
+	require.Equal(t, []*schema.ForeignKey{
 		{
 			Name:       "fk_comments_posts",
 			Columns:    []string{"post_id"},
 			RefTable:   "posts",
 			RefColumns: []string{"id"},
 			OnDelete:   "CASCADE",
+			OnUpdate:   "NO ACTION",
 		},
 		{
 			Name:       "fk_comments_users",
@@ -98,7 +93,7 @@ func TestInspectForeignKeys(t *testing.T) {
 			RefTable:   "users",
 			RefColumns: []string{"id"},
 			OnDelete:   "SET NULL",
+			OnUpdate:   "NO ACTION",
 		},
-	}
-	require.Equal(t, expectedCommentsFKs, commentsTable.ForeignKeys)
+	}, commentsTable.ForeignKeys)
 }
