@@ -8,6 +8,7 @@
 
 ## Tests writing guidelines
 
+- Follow general guidelines
 - Always use `github.com/stretchr/testify/require`
 - Avoid custom error messages
 - Avoid using `t.Run`, always write separated test functions
