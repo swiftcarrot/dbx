@@ -663,3 +663,21 @@ func quoteLiteral(s string) string {
 
 	return "'" + strings.ReplaceAll(s, "'", "''") + "'"
 }
+
+func PostgresArrayToSlice(pgArray string) []string {
+	if len(pgArray) < 2 || pgArray[0] != '{' || pgArray[len(pgArray)-1] != '}' {
+		return nil
+	}
+
+	trimmed := pgArray[1 : len(pgArray)-1]
+	if trimmed == "" {
+		return []string{}
+	}
+
+	result := strings.Split(trimmed, ",")
+	for i, val := range result {
+		result[i] = strings.TrimSpace(val)
+	}
+
+	return result
+}
