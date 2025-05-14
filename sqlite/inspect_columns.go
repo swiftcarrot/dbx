@@ -3,7 +3,6 @@ package sqlite
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/swiftcarrot/dbx/schema"
@@ -24,29 +23,22 @@ func (s *SQLite) InspectColumns(db *sql.DB, table *schema.Table) error {
 		var dfltValue sql.NullString
 		var pk int
 
-		// Scan the PRAGMA table_info columns: cid, name, type, notnull, dflt_value, pk
 		if err := rows.Scan(&cid, &col.Name, &col.Type, &notNull, &dfltValue, &pk); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		log.Println(col.Name, notNull)
-
-		// Map SQLite column information to the Column struct
 		col.Nullable = notNull == 0
 		if dfltValue.Valid {
 			col.Default = dfltValue.String
 		}
 
-		// Parse SQLite type for Precision, Scale, and Limit
 		col.Type, col.Limit, col.Precision, col.Scale = parseSQLiteType(col.Type)
 
-		// Check for AUTOINCREMENT by inspecting the table's SQL definition
 		col.AutoIncrement, err = isAutoIncrement(db, table.Name, col.Name)
 		if err != nil {
 			return fmt.Errorf("failed to check AUTOINCREMENT for %s: %w", col.Name, err)
 		}
 
-		// SQLite doesn't store comments in PRAGMA table_info; set to empty
 		col.Comment = ""
 
 		table.Columns = append(table.Columns, &col)

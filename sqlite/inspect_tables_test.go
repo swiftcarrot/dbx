@@ -12,8 +12,13 @@ func TestInspectTables(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = db.Exec(`
-		CREATE TABLE test_table_1 (id INTEGER PRIMARY KEY);
-		CREATE TABLE test_table_2 (id INTEGER PRIMARY KEY);
+		CREATE TABLE test_table_1 (
+			id INTEGER PRIMARY KEY
+		);
+
+		CREATE TABLE test_table_2 (
+			id INTEGER PRIMARY KEY
+		);
 	`)
 	require.NoError(t, err)
 	t.Cleanup(func() {

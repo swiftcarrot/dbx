@@ -2,8 +2,6 @@ package sqlite
 
 import (
 	"database/sql"
-	"fmt"
-	"strings"
 
 	"github.com/swiftcarrot/dbx/schema"
 )
@@ -18,9 +16,6 @@ func (s *SQLite) InspectForeignKeys(db *sql.DB, table *schema.Table) error {
 	}
 	defer rows.Close()
 
-	// Use a map to group foreign key entries by id (SQLite returns one row per column)
-	fkMap := make(map[int]*schema.ForeignKey)
-
 	for rows.Next() {
 		var id, seq int
 		var tableName, from, to, onUpdate, onDelete string
@@ -30,34 +25,19 @@ func (s *SQLite) InspectForeignKeys(db *sql.DB, table *schema.Table) error {
 			return err
 		}
 
-		fk, exists := fkMap[id]
-		if !exists {
-			// Generate a constraint name since SQLite doesn't name constraints
-			fkName := fmt.Sprintf("fk_%s_%s", table.Name, strings.ToLower(tableName))
-
-			fk = &schema.ForeignKey{
-				Name:       fkName,
-				RefTable:   tableName,
-				OnUpdate:   strings.ToUpper(onUpdate),
-				OnDelete:   strings.ToUpper(onDelete),
-				Columns:    []string{},
-				RefColumns: []string{},
-			}
-			fkMap[id] = fk
+		fk := &schema.ForeignKey{
+			RefTable:   tableName,
+			OnUpdate:   onUpdate,
+			OnDelete:   onDelete,
+			Columns:    []string{},
+			RefColumns: []string{},
 		}
 
 		fk.Columns = append(fk.Columns, from)
 		fk.RefColumns = append(fk.RefColumns, to)
-	}
 
-	if err := rows.Err(); err != nil {
-		return err
-	}
-
-	// Add all foreign keys from the map to the table
-	for _, fk := range fkMap {
 		table.ForeignKeys = append(table.ForeignKeys, fk)
 	}
 
-	return nil
+	return rows.Err()
 }

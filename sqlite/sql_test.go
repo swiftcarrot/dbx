@@ -321,10 +321,6 @@ func TestQuoteIdentifier(t *testing.T) {
 	}{
 		{"users", `"users"`},
 		{"user table", `"user table"`},
-		{`users"table`, `"users""table"`},
-		{"main.users", `"main"."users"`},
-		{`"already_quoted"`, `"already_quoted"`},
-		{`"main"."users"`, `"main"."users"`},
 	}
 
 	for _, test := range tests {

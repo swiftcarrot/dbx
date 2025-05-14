@@ -39,9 +39,9 @@ func TestInspectIndexes(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, []*schema.Index{
 		{
-			Name:    "idx_users_email",
-			Columns: []string{"email"},
-			Unique:  true,
+			Name:    "idx_users_name",
+			Columns: []string{"first_name", "last_name"},
+			Unique:  false,
 		},
 		{
 			Name:    "idx_users_username",
@@ -49,9 +49,9 @@ func TestInspectIndexes(t *testing.T) {
 			Unique:  false,
 		},
 		{
-			Name:    "idx_users_name",
-			Columns: []string{"first_name", "last_name"},
-			Unique:  false,
+			Name:    "idx_users_email",
+			Columns: []string{"email"},
+			Unique:  true,
 		},
 	}, table.Indexes)
 }
