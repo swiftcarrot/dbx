@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"database/sql"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -18,6 +19,7 @@ func GetSQLiteTestConn() (*sql.DB, error) {
 
 	// Create a temporary SQLite database file
 	dbPath := filepath.Join(tempDir, "test.db")
+	log.Println("Creating SQLite test database at:", dbPath)
 
 	// Open SQLite database connection
 	db, err := sql.Open("sqlite3", dbPath)

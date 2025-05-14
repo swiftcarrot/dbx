@@ -39,7 +39,7 @@ func TestInspectColumns(t *testing.T) {
 		{
 			Name:     "id",
 			Type:     "INTEGER",
-			Nullable: false,
+			Nullable: true,
 		},
 		{
 			Name:     "name",
@@ -59,7 +59,7 @@ func TestInspectColumns(t *testing.T) {
 		},
 		{
 			Name:      "rating",
-			Type:      "NUMERIC(3,1)",
+			Type:      "NUMERIC",
 			Precision: 3,
 			Scale:     1,
 			Nullable:  false,

@@ -84,6 +84,18 @@ import (
 my := mysql.New()
 ```
 
+### SQLite
+
+```go
+import (
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/swiftcarrot/dbx/sqlite"
+)
+
+s := sqlite.New()
+```
+
+
 For other dialect support, feel free to [create an issue](https://github.com/swiftcarrot/dbx/issues/new).
 
 ## License
