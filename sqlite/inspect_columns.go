@@ -3,6 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/swiftcarrot/dbx/schema"
@@ -32,7 +33,10 @@ func (s *SQLite) InspectColumns(db *sql.DB, table *schema.Table) error {
 			col.Default = dfltValue.String
 		}
 
-		col.Type, col.Limit, col.Precision, col.Scale = parseSQLiteType(col.Type)
+		col.Type, col.Limit, col.Precision, col.Scale, err = parseSQLiteType(col.Type)
+		if err != nil {
+			return fmt.Errorf("failed to parse SQLite type for %s: %w", col.Name, err)
+		}
 
 		col.AutoIncrement, err = isAutoIncrement(db, table.Name, col.Name)
 		if err != nil {
@@ -48,14 +52,14 @@ func (s *SQLite) InspectColumns(db *sql.DB, table *schema.Table) error {
 }
 
 // parseSQLiteType extracts type, limit, precision, and scale from SQLite type string
-func parseSQLiteType(sqliteType string) (typeName string, limit, precision, scale int) {
+func parseSQLiteType(sqliteType string) (typeName string, limit, precision, scale int, err error) {
 	// Convert to uppercase and remove extra spaces
 	sqliteType = strings.ToUpper(strings.TrimSpace(sqliteType))
 
 	// Extract type and parameters (e.g., "VARCHAR(255)" or "DECIMAL(10,2)")
 	parenIdx := strings.Index(sqliteType, "(")
 	if parenIdx == -1 {
-		return sqliteType, 0, 0, 0
+		return sqliteType, 0, 0, 0, nil
 	}
 
 	typeName = sqliteType[:parenIdx]
@@ -65,17 +69,29 @@ func parseSQLiteType(sqliteType string) (typeName string, limit, precision, scal
 		// Handle DECIMAL(precision, scale)
 		parts := strings.Split(params, ",")
 		if len(parts) == 2 {
-			fmt.Sscanf(parts[0], "%d", &precision)
-			fmt.Sscanf(parts[1], "%d", &scale)
+			precision, err = strconv.Atoi(strings.TrimSpace(parts[0]))
+			if err != nil {
+				return typeName, 0, 0, 0, err
+			}
+			scale, err = strconv.Atoi(strings.TrimSpace(parts[1]))
+			if err != nil {
+				return typeName, 0, 0, 0, err
+			}
 		} else if len(parts) == 1 {
-			fmt.Sscanf(parts[0], "%d", &precision)
+			precision, err = strconv.Atoi(strings.TrimSpace(parts[0]))
+			if err != nil {
+				return typeName, 0, 0, 0, err
+			}
 		}
 	} else if typeName == "VARCHAR" || typeName == "CHAR" || typeName == "CHARACTER" {
 		// Handle VARCHAR(length)
-		fmt.Sscanf(params, "%d", &limit)
+		limit, err = strconv.Atoi(params)
+		if err != nil {
+			return typeName, 0, 0, 0, err
+		}
 	}
 
-	return typeName, limit, precision, scale
+	return typeName, limit, precision, scale, nil
 }
 
 // isAutoIncrement checks if a column is defined with AUTOINCREMENT
