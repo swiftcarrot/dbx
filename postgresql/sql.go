@@ -129,7 +129,7 @@ func (pg *PostgreSQL) generateCreateTable(c schema.CreateTableChange) string {
 		if i > 0 {
 			sb.WriteString(",\n")
 		}
-		sb.WriteString(fmt.Sprintf("  %s %s", quoteIdentifier(col.Name), col.Type))
+		sb.WriteString(fmt.Sprintf("  %s %s", quoteIdentifier(col.Name), col.TypeSQL()))
 
 		// Add NOT NULL constraint if needed
 		if !col.Nullable {
@@ -184,7 +184,7 @@ func (pg *PostgreSQL) generateAddColumn(c schema.AddColumnChange) string {
 	sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s",
 		quoteIdentifier(c.TableName),
 		quoteIdentifier(column.Name),
-		column.Type)
+		column.TypeSQL())
 
 	if !column.Nullable {
 		sql += " NOT NULL"
@@ -221,7 +221,7 @@ func (pg *PostgreSQL) generateAlterColumn(c schema.AlterColumnChange) string {
 	statements = append(statements, fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s;",
 		quoteIdentifier(c.TableName),
 		quoteIdentifier(column.Name),
-		column.Type))
+		column.TypeSQL()))
 
 	// Nullability change
 	if !column.Nullable {

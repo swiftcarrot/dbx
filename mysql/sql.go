@@ -125,7 +125,7 @@ func (my *MySQL) generateCreateTable(c schema.CreateTableChange) string {
 		if i > 0 {
 			sb.WriteString(",\n")
 		}
-		sb.WriteString(fmt.Sprintf("  %s %s", quoteIdentifier(col.Name), col.Type))
+		sb.WriteString(fmt.Sprintf("  %s %s", quoteIdentifier(col.Name), col.TypeSQL()))
 
 		// Add NOT NULL constraint if needed
 		if !col.Nullable {
@@ -157,7 +157,7 @@ func (my *MySQL) generateCreateTable(c schema.CreateTableChange) string {
 			sb.WriteString(fmt.Sprintf("\nALTER TABLE %s MODIFY COLUMN %s %s",
 				quoteIdentifier(table.Name),
 				quoteIdentifier(col.Name),
-				col.Type))
+				col.TypeSQL()))
 
 			if !col.Nullable {
 				sb.WriteString(" NOT NULL")
@@ -185,7 +185,7 @@ func (my *MySQL) generateAddColumn(c schema.AddColumnChange) string {
 	sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s",
 		quoteIdentifier(c.TableName),
 		quoteIdentifier(column.Name),
-		column.Type)
+		column.TypeSQL())
 
 	if !column.Nullable {
 		sql += " NOT NULL"
@@ -215,7 +215,7 @@ func (my *MySQL) generateAlterColumn(c schema.AlterColumnChange) string {
 	sql := fmt.Sprintf("ALTER TABLE %s MODIFY COLUMN %s %s",
 		quoteIdentifier(c.TableName),
 		quoteIdentifier(column.Name),
-		column.Type)
+		column.TypeSQL())
 
 	if !column.Nullable {
 		sql += " NOT NULL"
@@ -502,7 +502,7 @@ func (my *MySQL) CreateTable(table *schema.Table) string {
 func (my *MySQL) CreateColumn(column *schema.Column) string {
 	var b strings.Builder
 
-	fmt.Fprintf(&b, "%s %s", QuoteIdentifier(column.Name), column.Type)
+	fmt.Fprintf(&b, "%s %s", QuoteIdentifier(column.Name), column.TypeSQL())
 
 	if !column.Nullable {
 		b.WriteString(" NOT NULL")

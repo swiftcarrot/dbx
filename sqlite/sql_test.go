@@ -15,11 +15,11 @@ func TestCreateTable(t *testing.T) {
 	table := &schema.Table{
 		Name: "users",
 		Columns: []*schema.Column{
-			{Name: "id", Type: "INTEGER", Nullable: false},
-			{Name: "name", Type: "TEXT", Nullable: false},
-			{Name: "email", Type: "TEXT", Nullable: false},
-			{Name: "bio", Type: "TEXT", Nullable: true},
-			{Name: "created_at", Type: "TIMESTAMP", Nullable: false, Default: "CURRENT_TIMESTAMP"},
+			{Name: "id", Type: &IntegerType{}, Nullable: false},
+			{Name: "name", Type: &TextType{}, Nullable: false},
+			{Name: "email", Type: &TextType{}, Nullable: false},
+			{Name: "bio", Type: &TextType{}, Nullable: true},
+			{Name: "created_at", Type: &TimestampType{}, Nullable: false, Default: "CURRENT_TIMESTAMP"},
 		},
 		PrimaryKey: &schema.PrimaryKey{
 			Name:    "users_pkey",
@@ -56,7 +56,7 @@ func TestAddColumn(t *testing.T) {
 	sqlite := New()
 	column := &schema.Column{
 		Name:     "email",
-		Type:     "TEXT",
+		Type:     &TextType{},
 		Nullable: false,
 		Default:  "'user@example.com'",
 	}
@@ -279,7 +279,7 @@ func TestUnsupportedOperations(t *testing.T) {
 		TableName: "users",
 		Column: &schema.Column{
 			Name:     "email",
-			Type:     "TEXT",
+			Type:     &schema.TextType{},
 			Nullable: true,
 		},
 	}

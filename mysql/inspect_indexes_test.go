@@ -33,13 +33,6 @@ func TestInspectIndexes(t *testing.T) {
 	my := New()
 	table := &schema.Table{
 		Name: "test_indexes",
-		Columns: []*schema.Column{
-			{Name: "id", Type: "int"},
-			{Name: "email", Type: "varchar"},
-			{Name: "first_name", Type: "varchar"},
-			{Name: "last_name", Type: "varchar"},
-			{Name: "created_at", Type: "timestamp"},
-		},
 	}
 	err = my.InspectIndexes(db, table)
 	require.NoError(t, err)

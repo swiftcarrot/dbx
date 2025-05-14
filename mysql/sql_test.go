@@ -82,11 +82,11 @@ func TestCreateTable(t *testing.T) {
 	table := &schema.Table{
 		Name: "users",
 		Columns: []*schema.Column{
-			{Name: "id", Type: "int", Nullable: false},
-			{Name: "name", Type: "varchar(100)", Nullable: false},
-			{Name: "email", Type: "varchar(255)", Nullable: false},
-			{Name: "bio", Type: "text", Nullable: true, Comment: "User biography"},
-			{Name: "created_at", Type: "timestamp", Nullable: false, Default: "CURRENT_TIMESTAMP"},
+			{Name: "id", Type: &IntType{}, Nullable: false},
+			{Name: "name", Type: &schema.VarcharType{Length: 100}, Nullable: false},
+			{Name: "email", Type: &schema.VarcharType{Length: 255}, Nullable: false},
+			{Name: "bio", Type: &schema.TextType{}, Nullable: true, Comment: "User biography"},
+			{Name: "created_at", Type: &schema.TimestampType{}, Nullable: false, Default: "CURRENT_TIMESTAMP"},
 		},
 		PrimaryKey: &schema.PrimaryKey{
 			Columns: []string{"id"},
@@ -115,7 +115,7 @@ func TestAddColumn(t *testing.T) {
 	my := New()
 	column := &schema.Column{
 		Name:     "email",
-		Type:     "varchar(255)",
+		Type:     &schema.VarcharType{Length: 255},
 		Nullable: false,
 		Default:  "'user@example.com'",
 		Comment:  "User email address",
@@ -146,7 +146,7 @@ func TestAlterColumn(t *testing.T) {
 		TableName: "users",
 		Column: &schema.Column{
 			Name:     "email",
-			Type:     "varchar(100)",
+			Type:     &schema.VarcharType{Length: 100},
 			Nullable: true,
 			Default:  "",
 			Comment:  "Updated comment",

@@ -68,22 +68,50 @@ func (my *MySQL) InspectColumns(db *sql.DB, table *schema.Table) error {
 			Name: name,
 		}
 
-		// Set the base type (without precision/scale/limit info)
-		column.Type = dataType
-
-		// Handle specific types
+		// Handle specific types based on dataType
 		switch strings.ToLower(dataType) {
 		case "varchar", "char", "binary", "varbinary":
+			var length int
 			if charMaxLength.Valid {
-				column.Limit = int(charMaxLength.Int64)
+				length = int(charMaxLength.Int64)
 			}
+			column.Type = &schema.VarcharType{
+				Length: length,
+			}
+		case "text", "mediumtext", "longtext", "tinytext":
+			column.Type = &schema.TextType{}
 		case "decimal", "numeric":
+			precision := 0
+			scale := 0
 			if numericPrecision.Valid {
-				column.Precision = int(numericPrecision.Int64)
+				precision = int(numericPrecision.Int64)
 			}
 			if numericScale.Valid {
-				column.Scale = int(numericScale.Int64)
+				scale = int(numericScale.Int64)
 			}
+			column.Type = &schema.DecimalType{
+				Precision: precision,
+				Scale:     scale,
+			}
+			column.Precision = precision
+			column.Scale = scale
+		case "int", "integer", "tinyint", "smallint", "mediumint":
+			column.Type = &schema.IntegerType{}
+		case "bigint":
+			column.Type = &schema.BigIntType{}
+		case "float", "double":
+			column.Type = &schema.FloatType{}
+		case "boolean", "bool":
+			column.Type = &schema.BooleanType{}
+		case "date":
+			column.Type = &schema.DateType{}
+		case "time":
+			column.Type = &schema.TimeType{}
+		case "timestamp", "datetime":
+			column.Type = &schema.TimestampType{}
+		default:
+			// Default to text type
+			column.Type = &schema.TextType{}
 		}
 
 		// Set nullable

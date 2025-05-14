@@ -11,10 +11,16 @@ type Table struct {
 }
 
 // Column adds a column to a table
-func (t *Table) Column(name string, columnType string, options ...ColumnOption) *Column {
+func (t *Table) Column(name string, columnType ColumnType, options ...ColumnOption) *Column {
 	col := &Column{
 		Name: name,
 		Type: columnType,
+	}
+
+	// If the columnType is a DecimalType, set the Precision and Scale
+	if dt, ok := columnType.(*DecimalType); ok {
+		col.Precision = dt.Precision
+		col.Scale = dt.Scale
 	}
 
 	for _, option := range options {
@@ -71,21 +77,24 @@ type Column struct {
 	// Column name in the database
 	Name string
 	// SQL data type of the column
-	Type string
+	Type ColumnType
 	// Whether the column allows NULL values
 	Nullable bool
 	// Default value expression for the column
 	Default string
-	// The total number of digits (both before and after the decimal point).
-	Precision int
-	// The number of digits after the decimal point.
-	Scale int
 	// Comment or description attached to the column
 	Comment string
 	// Whether the column auto-increments (like SERIAL or AUTO_INCREMENT)
 	AutoIncrement bool
-	// Maximum length for varchar/char types
-	Limit int
+	// Precision for numeric types (e.g., decimal)
+	Precision int
+	// Scale for numeric types (e.g., decimal)
+	Scale int
+}
+
+// TypeSQL returns the SQL representation of the column type
+func (c *Column) TypeSQL() string {
+	return c.Type.SQL()
 }
 
 // ColumnOption is a function type for column options
