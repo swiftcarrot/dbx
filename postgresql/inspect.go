@@ -40,6 +40,11 @@ func (pg *PostgreSQL) Inspect(db *sql.DB) (*schema.Schema, error) {
 		return nil, fmt.Errorf("failed to get views: %w", err)
 	}
 
+	// Get row policies
+	if err := pg.InspectRowPolicies(db, s); err != nil {
+		return nil, fmt.Errorf("failed to get row policies: %w", err)
+	}
+
 	// Get tables in public schema
 	tables, err := pg.InspectTables(db)
 	if err != nil {

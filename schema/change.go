@@ -31,6 +31,9 @@ const (
 	CreateTrigger    ChangeType = "create_trigger"
 	AlterTrigger     ChangeType = "alter_trigger"
 	DropTrigger      ChangeType = "drop_trigger"
+	CreateRowPolicy  ChangeType = "create_row_policy"
+	AlterRowPolicy   ChangeType = "alter_row_policy"
+	DropRowPolicy    ChangeType = "drop_row_policy"
 )
 
 // Change is an interface representing a database schema change
@@ -360,4 +363,38 @@ type DropTriggerChange struct {
 
 func (c DropTriggerChange) Type() ChangeType {
 	return DropTrigger
+}
+
+// RowPolicy-related changes
+
+// CreateRowPolicyChange represents creating a new row policy
+type CreateRowPolicyChange struct {
+	BaseChange
+	RowPolicy *RowPolicy
+}
+
+func (c CreateRowPolicyChange) Type() ChangeType {
+	return CreateRowPolicy
+}
+
+// AlterRowPolicyChange represents altering an existing row policy
+type AlterRowPolicyChange struct {
+	BaseChange
+	RowPolicy *RowPolicy
+}
+
+func (c AlterRowPolicyChange) Type() ChangeType {
+	return AlterRowPolicy
+}
+
+// DropRowPolicyChange represents dropping a row policy
+type DropRowPolicyChange struct {
+	BaseChange
+	SchemaName string
+	TableName  string
+	PolicyName string
+}
+
+func (c DropRowPolicyChange) Type() ChangeType {
+	return DropRowPolicy
 }

@@ -28,6 +28,7 @@ func Diff(source, target *Schema) []Change {
 	changes = append(changes, diffSequences(source, target)...)
 	changes = append(changes, diffFunctions(source, target)...)
 	changes = append(changes, diffViews(source, target)...)
+	changes = append(changes, diffRowPolicies(source, target)...)
 
 	// Tables that exist in source but not in target should be dropped
 	for _, sourceTable := range source.Tables {
@@ -696,4 +697,63 @@ func equalStringSlices(a, b []string) bool {
 		}
 	}
 	return true
+}
+
+// diffRowPolicies compares row policies and returns create/alter/drop row policy changes
+func diffRowPolicies(source, target *Schema) []Change {
+	var changes []Change
+
+	// Row policies that exist in source but not in target should be dropped
+	for _, sourcePolicy := range source.RowPolicies {
+		found := false
+		for _, targetPolicy := range target.RowPolicies {
+			if sourcePolicy.PolicyName == targetPolicy.PolicyName &&
+				sourcePolicy.TableName == targetPolicy.TableName &&
+				sourcePolicy.Schema == targetPolicy.Schema {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			changes = append(changes, &DropRowPolicyChange{
+				SchemaName: sourcePolicy.Schema,
+				TableName:  sourcePolicy.TableName,
+				PolicyName: sourcePolicy.PolicyName,
+			})
+		}
+	}
+
+	// Find row policies to create or modify
+	for _, targetPolicy := range target.RowPolicies {
+		found := false
+		for _, sourcePolicy := range source.RowPolicies {
+			if targetPolicy.PolicyName == sourcePolicy.PolicyName &&
+				targetPolicy.TableName == sourcePolicy.TableName &&
+				targetPolicy.Schema == sourcePolicy.Schema {
+				found = true
+
+				// Policy exists in both source and target, check if it needs modification
+				if targetPolicy.CommandType != sourcePolicy.CommandType ||
+					!stringsEqual(targetPolicy.Roles, sourcePolicy.Roles) ||
+					targetPolicy.UsingExpr != sourcePolicy.UsingExpr ||
+					targetPolicy.CheckExpr != sourcePolicy.CheckExpr ||
+					targetPolicy.Permissive != sourcePolicy.Permissive {
+					changes = append(changes, &AlterRowPolicyChange{
+						RowPolicy: targetPolicy,
+					})
+				}
+				break
+			}
+		}
+
+		if !found {
+			// Row policy exists in target but not in source, create it
+			changes = append(changes, &CreateRowPolicyChange{
+				RowPolicy: targetPolicy,
+			})
+		}
+	}
+
+	return changes
 }

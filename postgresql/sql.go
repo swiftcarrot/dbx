@@ -86,6 +86,14 @@ func (pg *PostgreSQL) GenerateSQL(change schema.Change) (string, error) {
 	case schema.DropTriggerChange:
 		return pg.generateDropTrigger(c), nil
 
+	// Row Policy-related changes
+	case schema.CreateRowPolicyChange:
+		return pg.generateCreateRowPolicy(c), nil
+	case schema.AlterRowPolicyChange:
+		return pg.generateAlterRowPolicy(c), nil
+	case schema.DropRowPolicyChange:
+		return pg.generateDropRowPolicy(c), nil
+
 	default:
 		return "", fmt.Errorf("unsupported change type: %T", change)
 	}
@@ -680,4 +688,75 @@ func PostgresArrayToSlice(pgArray string) []string {
 	}
 
 	return result
+}
+
+// Row Policy-related SQL generation
+
+func (pg *PostgreSQL) generateCreateRowPolicy(c schema.CreateRowPolicyChange) string {
+	policy := c.RowPolicy
+	var sb strings.Builder
+
+	tableName := policy.TableName
+	if policy.Schema != "" && policy.Schema != "public" {
+		tableName = policy.Schema + "." + tableName
+	}
+
+	sb.WriteString(fmt.Sprintf("CREATE POLICY %s ON %s",
+		quoteIdentifier(policy.PolicyName),
+		quoteIdentifier(tableName)))
+
+	// Add AS PERMISSIVE/RESTRICTIVE if specified
+	if !policy.Permissive {
+		sb.WriteString(" AS RESTRICTIVE")
+	}
+
+	// Add FOR command type
+	sb.WriteString(fmt.Sprintf(" FOR %s", policy.CommandType))
+
+	// Add TO roles if specified
+	if len(policy.Roles) > 0 {
+		roles := make([]string, len(policy.Roles))
+		copy(roles, policy.Roles)
+		sb.WriteString(fmt.Sprintf(" TO %s", strings.Join(roles, ", ")))
+	}
+
+	// Add USING expression if specified
+	if policy.UsingExpr != "" {
+		sb.WriteString(fmt.Sprintf(" USING (%s)", policy.UsingExpr))
+	}
+
+	// Add WITH CHECK expression if specified
+	if policy.CheckExpr != "" {
+		sb.WriteString(fmt.Sprintf(" WITH CHECK (%s)", policy.CheckExpr))
+	}
+
+	sb.WriteString(";")
+
+	return sb.String()
+}
+
+func (pg *PostgreSQL) generateAlterRowPolicy(c schema.AlterRowPolicyChange) string {
+	// PostgreSQL doesn't support directly altering policies, so we drop and recreate
+	dropSQL := pg.generateDropRowPolicy(schema.DropRowPolicyChange{
+		SchemaName: c.RowPolicy.Schema,
+		TableName:  c.RowPolicy.TableName,
+		PolicyName: c.RowPolicy.PolicyName,
+	})
+
+	createSQL := pg.generateCreateRowPolicy(schema.CreateRowPolicyChange{
+		RowPolicy: c.RowPolicy,
+	})
+
+	return dropSQL + "\n" + createSQL
+}
+
+func (pg *PostgreSQL) generateDropRowPolicy(c schema.DropRowPolicyChange) string {
+	tableName := c.TableName
+	if c.SchemaName != "" && c.SchemaName != "public" {
+		tableName = c.SchemaName + "." + tableName
+	}
+
+	return fmt.Sprintf("DROP POLICY %s ON %s;",
+		quoteIdentifier(c.PolicyName),
+		quoteIdentifier(tableName))
 }
