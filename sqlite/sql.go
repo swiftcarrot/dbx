@@ -61,7 +61,7 @@ func (s *SQLite) createTable(change schema.CreateTableChange) (string, error) {
 
 	// Add columns
 	for i, col := range table.Columns {
-		b.WriteString(fmt.Sprintf("  %s %s", quoteIdentifier(col.Name), col.Type))
+		b.WriteString(fmt.Sprintf("  %s %s", quoteIdentifier(col.Name), col.TypeSQL()))
 
 		if !col.Nullable {
 			b.WriteString(" NOT NULL")
@@ -143,7 +143,7 @@ func (s *SQLite) addColumn(change schema.AddColumnChange) (string, error) {
 	b.WriteString(fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s",
 		quoteIdentifier(change.TableName),
 		quoteIdentifier(col.Name),
-		col.Type))
+		col.TypeSQL()))
 
 	if !col.Nullable {
 		b.WriteString(" NOT NULL")

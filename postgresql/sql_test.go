@@ -55,7 +55,7 @@ func TestCreateTable(t *testing.T) {
 	table := &schema.Table{
 		Name: "users",
 		Columns: []*schema.Column{
-			{Name: "id", Type: &schema.IntegerType{}, Nullable: false, AutoIncrement: true},
+			{Name: "id", Type: &SerialType{}, Nullable: false},
 			{Name: "name", Type: &schema.VarcharType{Length: 100}, Nullable: false},
 			{Name: "email", Type: &schema.VarcharType{Length: 255}, Nullable: false},
 			{Name: "bio", Type: &schema.TextType{}, Nullable: true, Comment: "User biography"},

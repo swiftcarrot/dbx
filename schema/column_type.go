@@ -1,5 +1,7 @@
 package schema
 
+import "fmt"
+
 // ColumnType represents a SQL column type
 // This interface ensures only valid SQL column types can be used
 // Each database dialect may provide its own implementations
@@ -56,6 +58,12 @@ type DecimalType struct {
 }
 
 func (t *DecimalType) SQL() string {
+	if t.Precision > 0 {
+		if t.Scale > 0 {
+			return fmt.Sprintf("decimal(%d,%d)", t.Precision, t.Scale)
+		}
+		return fmt.Sprintf("decimal(%d)", t.Precision)
+	}
 	return "decimal"
 }
 
@@ -65,6 +73,9 @@ type VarcharType struct {
 }
 
 func (t *VarcharType) SQL() string {
+	if t.Length > 0 {
+		return fmt.Sprintf("varchar(%d)", t.Length)
+	}
 	return "varchar"
 }
 

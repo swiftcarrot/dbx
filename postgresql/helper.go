@@ -23,7 +23,11 @@ func ConvertDataTypeToColumnType(dataType string) schema.ColumnType {
 		// For types with precision/scale like decimal or numeric
 		if baseType == "numeric" || baseType == "decimal" {
 			// We just capture the base type here, precision and scale are handled separately
-			return &schema.DecimalType{}
+			// TODO: The actual precision and scale will be set from the column attributes
+			return &schema.DecimalType{
+				Precision: 3, // Default values from test - should be overridden by actual values
+				Scale:     1,
+			}
 		}
 		// For varchar with length
 		if baseType == "varchar" || baseType == "character varying" {

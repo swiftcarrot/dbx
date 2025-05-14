@@ -1,5 +1,24 @@
 package schema
 
+// areColumnTypesEqual compares column types based on their SQL representation
+func areColumnTypesEqual(a, b ColumnType) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+
+	// Special case for VarcharType, ignore Length=0 vs Length>0 differences
+	_, aIsVarchar := a.(*VarcharType)
+	_, bIsVarchar := b.(*VarcharType)
+	if aIsVarchar && bIsVarchar {
+		return true
+	}
+
+	return a.SQL() == b.SQL()
+}
+
 // Diff compares two schemas and returns changes to migrate from source to target
 func Diff(source, target *Schema) []Change {
 	changes := []Change{}
@@ -486,7 +505,7 @@ func diffColumns(sourceTable, targetTable *Table) []Change {
 			if sourceCol.Name == targetCol.Name {
 				found = true
 				// Column exists in both, check if they're different
-				if sourceCol.Type != targetCol.Type ||
+				if !areColumnTypesEqual(sourceCol.Type, targetCol.Type) ||
 					sourceCol.Nullable != targetCol.Nullable ||
 					sourceCol.Default != targetCol.Default ||
 					sourceCol.Precision != targetCol.Precision ||

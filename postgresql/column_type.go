@@ -2,6 +2,13 @@ package postgresql
 
 import "github.com/swiftcarrot/dbx/schema"
 
+// SerialType represents a SERIAL column type in PostgreSQL for auto-incrementing integers
+type SerialType struct{}
+
+func (t *SerialType) SQL() string {
+	return "serial"
+}
+
 // JSONType represents a JSON column type in PostgreSQL
 type JSONType struct{}
 
@@ -51,13 +58,6 @@ type MACAddrType struct{}
 
 func (t *MACAddrType) SQL() string {
 	return "macaddr"
-}
-
-// SerialType represents a SERIAL column type in PostgreSQL
-type SerialType struct{}
-
-func (t *SerialType) SQL() string {
-	return "serial"
 }
 
 // BigSerialType represents a BIGSERIAL column type in PostgreSQL

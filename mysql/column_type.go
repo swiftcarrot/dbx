@@ -1,5 +1,12 @@
 package mysql
 
+// IntType represents an INT column type in MySQL (instead of INTEGER)
+type IntType struct{}
+
+func (t *IntType) SQL() string {
+	return "int"
+}
+
 // JSONType represents a JSON column type in MySQL
 type JSONType struct{}
 
