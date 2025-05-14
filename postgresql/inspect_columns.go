@@ -56,7 +56,8 @@ func (pg *PostgreSQL) InspectColumns(db *sql.DB, table *schema.Table) error {
 			options = append(options, schema.Comment(comment.String))
 		}
 
-		column := table.Column(colName.String, dataType.String, options...)
+		columnType := ConvertDataTypeToColumnType(dataType.String)
+		column := table.Column(colName.String, columnType, options...)
 
 		if precision.Valid {
 			column.Precision = int(precision.Int64)

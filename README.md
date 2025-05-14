@@ -3,10 +3,10 @@
 > [!WARNING]
 > This project is in beta. The API is subject to changes and may break.
 
-
 [![Go Reference](https://pkg.go.dev/badge/github.com/swiftcarrot/dbx.svg)](https://pkg.go.dev/github.com/swiftcarrot/dbx)
 [![Go Report Card](https://goreportcard.com/badge/github.com/swiftcarrot/dbx)](https://goreportcard.com/report/github.com/swiftcarrot/dbx)
 [![CI Status](https://github.com/swiftcarrot/dbx/workflows/test/badge.svg)](https://github.com/swiftcarrot/dbx/actions)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/swiftcarrot/dbx)
 
 dbx is a database schema migration library for Go that lets you manage database schemas using Go code instead of SQL.
 
@@ -42,7 +42,7 @@ Define a target schema and compare with current schema:
 ```go
 target := schema.NewSchema()
 target.CreateTable("user", func(t *schema.Table) {
-	t.Column("name", "text", schema.NotNull)
+	t.Column("name", &schema.TextType{}, schema.NotNull)
 	t.Index("users_name_idx", []string{"name"})
 })
 
@@ -94,7 +94,6 @@ import (
 
 s := sqlite.New()
 ```
-
 
 For other dialect support, feel free to [create an issue](https://github.com/swiftcarrot/dbx/issues/new).
 

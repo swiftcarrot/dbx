@@ -25,8 +25,8 @@ func TestDiff(t *testing.T) {
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &VarcharType{})
 				})
 				return s
 			}(),
@@ -35,8 +35,8 @@ func TestDiff(t *testing.T) {
 					TableDef: &Table{
 						Name: "users",
 						Columns: []*Column{
-							{Name: "id", Type: "integer"},
-							{Name: "name", Type: "varchar"},
+							{Name: "id", Type: &IntegerType{}},
+							{Name: "name", Type: &VarcharType{}},
 						},
 						Indexes: []*Index{},
 					},
@@ -48,7 +48,7 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				return s
 			}(),
@@ -64,15 +64,15 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				return s
 			}(),
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &VarcharType{})
 				})
 				return s
 			}(),
@@ -81,7 +81,7 @@ func TestDiff(t *testing.T) {
 					TableName: "users",
 					Column: &Column{
 						Name: "name",
-						Type: "varchar",
+						Type: &VarcharType{},
 					},
 				},
 			},
@@ -91,15 +91,15 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &VarcharType{})
 				})
 				return s
 			}(),
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				return s
 			}(),
@@ -115,16 +115,16 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &VarcharType{})
 				})
 				return s
 			}(),
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "text")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &TextType{})
 				})
 				return s
 			}(),
@@ -133,7 +133,7 @@ func TestDiff(t *testing.T) {
 					TableName: "users",
 					Column: &Column{
 						Name: "name",
-						Type: "text",
+						Type: &TextType{},
 					},
 				},
 			},
@@ -143,14 +143,14 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				return s
 			}(),
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 					t.SetPrimaryKey("pk_users", []string{"id"})
 				})
 				return s
@@ -170,7 +170,7 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 					t.SetPrimaryKey("pk_users", []string{"id"})
 				})
 				return s
@@ -178,7 +178,7 @@ func TestDiff(t *testing.T) {
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				return s
 			}(),
@@ -194,16 +194,16 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &VarcharType{})
 				})
 				return s
 			}(),
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &VarcharType{})
 					t.Index("idx_name", []string{"name"})
 				})
 				return s
@@ -223,8 +223,8 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &VarcharType{})
 					t.Index("idx_name", []string{"name"})
 				})
 				return s
@@ -232,8 +232,8 @@ func TestDiff(t *testing.T) {
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &VarcharType{})
 				})
 				return s
 			}(),
@@ -249,22 +249,22 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				s.CreateTable("posts", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("user_id", "integer")
+					t.Column("id", &IntegerType{})
+					t.Column("user_id", &IntegerType{})
 				})
 				return s
 			}(),
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				s.CreateTable("posts", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("user_id", "integer")
+					t.Column("id", &IntegerType{})
+					t.Column("user_id", &IntegerType{})
 					t.ForeignKey("fk_user", []string{"user_id"}, "users", []string{"id"})
 				})
 				return s
@@ -286,11 +286,11 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				s.CreateTable("posts", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("user_id", "integer")
+					t.Column("id", &IntegerType{})
+					t.Column("user_id", &IntegerType{})
 					t.ForeignKey("fk_user", []string{"user_id"}, "users", []string{"id"})
 				})
 				return s
@@ -298,11 +298,11 @@ func TestDiff(t *testing.T) {
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				s.CreateTable("posts", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("user_id", "integer")
+					t.Column("id", &IntegerType{})
+					t.Column("user_id", &IntegerType{})
 				})
 				return s
 			}(),
@@ -318,8 +318,8 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("uuid", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("uuid", &VarcharType{})
 					t.SetPrimaryKey("pk_users_id", []string{"id"})
 				})
 				return s
@@ -327,8 +327,8 @@ func TestDiff(t *testing.T) {
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("uuid", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("uuid", &VarcharType{})
 					t.SetPrimaryKey("pk_users_uuid", []string{"uuid"})
 				})
 				return s
@@ -352,23 +352,23 @@ func TestDiff(t *testing.T) {
 			source: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("old_name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("old_name", &VarcharType{})
 				})
 				s.CreateTable("old_table", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				return s
 			}(),
 			target: func() *Schema {
 				s := NewSchema()
 				s.CreateTable("users", func(t *Table) {
-					t.Column("id", "integer")
-					t.Column("name", "varchar")
+					t.Column("id", &IntegerType{})
+					t.Column("name", &VarcharType{})
 					t.SetPrimaryKey("pk_users", []string{"id"})
 				})
 				s.CreateTable("new_table", func(t *Table) {
-					t.Column("id", "integer")
+					t.Column("id", &IntegerType{})
 				})
 				return s
 			}(),
@@ -384,7 +384,7 @@ func TestDiff(t *testing.T) {
 					TableName: "users",
 					Column: &Column{
 						Name: "name",
-						Type: "varchar",
+						Type: &VarcharType{},
 					},
 				},
 				&AddPrimaryKeyChange{
@@ -397,7 +397,7 @@ func TestDiff(t *testing.T) {
 				&CreateTableChange{
 					TableDef: &Table{
 						Name:    "new_table",
-						Columns: []*Column{{Name: "id", Type: "integer"}},
+						Columns: []*Column{{Name: "id", Type: &IntegerType{}}},
 						Indexes: []*Index{},
 					},
 				},
