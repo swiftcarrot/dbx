@@ -8,25 +8,21 @@ import (
 
 // InspectIndexes gets all indexes for a table (excluding primary key)
 func (pg *PostgreSQL) InspectIndexes(db *sql.DB, table *schema.Table) error {
-	// This query excludes primary key constraints by checking constraint_type
 	query := `
 		SELECT
-			i.relname AS index_name,
-			a.attname AS column_name,
-			ix.indisunique AS is_unique
-		FROM
-			pg_index ix
-			JOIN pg_class i ON i.oid = ix.indexrelid
-			JOIN pg_class t ON t.oid = ix.indrelid
-			JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = ANY(ix.indkey)
-			JOIN pg_namespace n ON t.relnamespace = n.oid
-			LEFT JOIN pg_constraint c ON c.conindid = ix.indexrelid
-		WHERE
-			t.relname = $1
-			AND n.nspname = 'public'
-			AND (c.contype IS NULL OR c.contype != 'p')
-		ORDER BY
-			i.relname, a.attnum
+            i.indexname AS name,
+            array_agg(a.attname) AS columns,
+            idx.indisunique AS is_unique
+        FROM pg_indexes i
+        JOIN pg_class c ON c.relname = i.tablename AND c.relnamespace = i.schemaname::regnamespace
+        JOIN pg_index idx ON idx.indexrelid = (SELECT oid FROM pg_class WHERE relname = i.indexname AND relnamespace = i.schemaname::regnamespace)
+        JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = ANY(idx.indkey)
+        WHERE
+			i.schemaname NOT IN ('pg_catalog', 'information_schema')
+			AND i.tablename = $1
+			AND idx.indisprimary = false
+        GROUP BY i.indexname, i.schemaname, idx.indisunique
+		ORDER BY i.indexname;
 	`
 
 	rows, err := db.Query(query, table.Name)
@@ -35,34 +31,21 @@ func (pg *PostgreSQL) InspectIndexes(db *sql.DB, table *schema.Table) error {
 	}
 	defer rows.Close()
 
-	// Group columns by index name
-	indexColumns := make(map[string][]string)
-	indexUnique := make(map[string]bool)
-
 	for rows.Next() {
-		var indexName, colName string
+		var name string
+		var columns string
 		var isUnique bool
 
-		if err := rows.Scan(&indexName, &colName, &isUnique); err != nil {
+		if err := rows.Scan(&name, &columns, &isUnique); err != nil {
 			return err
 		}
 
-		indexColumns[indexName] = append(indexColumns[indexName], colName)
-		indexUnique[indexName] = isUnique
-	}
-
-	if err := rows.Err(); err != nil {
-		return err
-	}
-
-	// Create indexes
-	for indexName, columns := range indexColumns {
 		options := []schema.IndexOption{}
-		if indexUnique[indexName] {
+		if isUnique {
 			options = append(options, schema.Unique)
 		}
-		table.Index(indexName, columns, options...)
+		table.Index(name, PostgresArrayToSlice(columns), options...)
 	}
 
-	return nil
+	return rows.Err()
 }

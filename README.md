@@ -30,7 +30,7 @@ import (
 	"github.com/swiftcarrot/dbx/schema"
 )
 
-db, err := sql.Open("postgres", "postgres://")
+db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/dbx_test?sslmode=disable")
 pg := postgresql.New()
 source, err := pg.Inspect(db)
 ```
@@ -43,7 +43,7 @@ Define a target schema and compare with current schema:
 target := schema.NewSchema()
 target.CreateTable("user", func(t *schema.Table) {
 	t.Column("name", "text", schema.NotNull)
-	t.Index("")
+	t.Index("users_name_idx", []string{"name"})
 })
 
 changes, err := schema.Diff(source, target)
@@ -83,6 +83,18 @@ import (
 
 my := mysql.New()
 ```
+
+### SQLite
+
+```go
+import (
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/swiftcarrot/dbx/sqlite"
+)
+
+s := sqlite.New()
+```
+
 
 For other dialect support, feel free to [create an issue](https://github.com/swiftcarrot/dbx/issues/new).
 

@@ -52,7 +52,7 @@ func TestInspectIndexes(t *testing.T) {
 	require.Equal(t, []*schema.Index{
 		{Name: "idx_test_email", Columns: []string{"email"}, Unique: true},
 		{Name: "idx_test_name", Columns: []string{"first_name", "last_name"}},
-		{Name: "idx_test_username", Unique: false, Columns: []string{"username"}},
+		{Name: "idx_test_username", Columns: []string{"username"}},
 		// {Name: "idx_test_created_year", Unique: false, Columns: []string{"EXTRACT(YEAR FROM created_at)"}},
 	}, table.Indexes)
 }

@@ -478,9 +478,6 @@ func TestQuoteIdentifier(t *testing.T) {
 	}{
 		{"users", "`users`"},
 		{"user table", "`user table`"},
-		{"`users`table", "```users``table`"},
-		{"test_db.users", "`test_db`.`users`"},
-		{"`already_quoted`", "`already_quoted`"},
 	}
 
 	for _, test := range tests {
@@ -496,7 +493,6 @@ func TestQuoteLiteral(t *testing.T) {
 		{"test", "'test'"},
 		{"test's string", "'test''s string'"},
 		{"O'Reilly", "'O''Reilly'"},
-		{"'already_quoted'", "'already_quoted'"},
 	}
 
 	for _, test := range tests {

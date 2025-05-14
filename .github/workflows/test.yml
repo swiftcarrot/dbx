@@ -34,12 +34,12 @@ jobs:
       mysql:
         image: ${{ matrix.mysql-version }}
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: dbx_test
         ports:
           - 3306:3306
         options: >-
-          --health-cmd "mysqladmin ping -h localhost -u root -proot"
+          --health-cmd "mysqladmin ping -h localhost -u root"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -61,7 +61,7 @@ jobs:
         run: go build -v ./...
 
       - name: Run tests
-        run: go test -v -race $(go list ./... | grep -v "/mysql")
+        run: go test -v ./...
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432

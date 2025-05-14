@@ -7,6 +7,7 @@ import (
 
 // InspectTables returns a list of all tables in the database
 func (my *MySQL) InspectTables(db *sql.DB) ([]string, error) {
+	// TODO: in what order?
 	query := `
 		SELECT
 			table_name
@@ -15,8 +16,6 @@ func (my *MySQL) InspectTables(db *sql.DB) ([]string, error) {
 		WHERE
 			table_schema = DATABASE()
 			AND table_type = 'BASE TABLE'
-		ORDER BY
-			table_name;
 	`
 
 	rows, err := db.Query(query)

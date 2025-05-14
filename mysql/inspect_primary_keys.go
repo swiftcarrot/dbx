@@ -12,20 +12,16 @@ import (
 func (my *MySQL) InspectPrimaryKey(db *sql.DB, table *schema.Table) error {
 	query := `
 		SELECT
-			kc.constraint_name,
-			GROUP_CONCAT(kc.column_name ORDER BY kc.ordinal_position) AS columns
+			index_name,
+			GROUP_CONCAT(column_name ORDER BY seq_in_index) as column_names
 		FROM
-			information_schema.table_constraints tc
-		JOIN
-			information_schema.key_column_usage kc
-			ON tc.constraint_name = kc.constraint_name
-			AND tc.constraint_type = 'PRIMARY KEY'
-			AND tc.table_schema = kc.table_schema
+			information_schema.statistics
 		WHERE
-			tc.table_name = ?
-			AND tc.table_schema = DATABASE()
-		GROUP BY
-			kc.constraint_name;
+			table_schema = DATABASE()
+			AND table_name = ?
+			AND index_name = 'PRIMARY'
+		GROUP BY table_name
+		ORDER BY table_name
 	`
 
 	var name string

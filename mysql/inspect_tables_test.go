@@ -10,9 +10,8 @@ import (
 func TestInspectTables(t *testing.T) {
 	db, err := testutil.GetMySQLTestConn()
 	require.NoError(t, err)
-	defer db.Close()
 
-	setupSQL := `
+	_, err = db.Exec(`
 		CREATE TABLE users (
 			id INT PRIMARY KEY
 		);
@@ -24,8 +23,7 @@ func TestInspectTables(t *testing.T) {
 		CREATE TABLE comments (
 			id INT PRIMARY KEY
 		);
-	`
-	_, err = db.Exec(setupSQL)
+	`)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
@@ -38,10 +36,7 @@ func TestInspectTables(t *testing.T) {
 	})
 
 	my := New()
-
 	tables, err := my.InspectTables(db)
 	require.NoError(t, err)
-
-	expectedTables := []string{"users", "posts", "comments"}
-	require.Equal(t, expectedTables, tables)
+	require.Equal(t, []string{"comments", "posts", "users"}, tables)
 }
