@@ -716,9 +716,7 @@ func (pg *PostgreSQL) generateCreateRowPolicy(c schema.CreateRowPolicyChange) st
 	// Add TO roles if specified
 	if len(policy.Roles) > 0 {
 		roles := make([]string, len(policy.Roles))
-		for i, role := range policy.Roles {
-			roles[i] = role
-		}
+		copy(roles, policy.Roles)
 		sb.WriteString(fmt.Sprintf(" TO %s", strings.Join(roles, ", ")))
 	}
 
