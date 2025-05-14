@@ -87,17 +87,9 @@ func (s *SQLite) InspectColumns(db *sql.DB, table *schema.Table) error {
 		case "real":
 			col.Type = &schema.FloatType{}
 		case "numeric", "decimal":
-			if col.Name == "rating" {
-				// TODO: Hard-code expected values for the test
-				col.Type = &schema.DecimalType{
-					Precision: 3,
-					Scale:     1,
-				}
-			} else {
-				col.Type = &schema.DecimalType{
-					Precision: typePrecision,
-					Scale:     typeScale,
-				}
+			col.Type = &schema.DecimalType{
+				Precision: typePrecision,
+				Scale:     typeScale,
 			}
 		case "varchar", "character varying":
 			col.Type = &schema.VarcharType{

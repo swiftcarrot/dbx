@@ -57,15 +57,14 @@ func TestInspectColumns(t *testing.T) {
 			Nullable: true,
 			Default:  "18",
 		},
-		// TODO: fix decimal type
-		// {
-		// 	Name:      "rating",
-		// 	Type:      &schema.DecimalType{Precision: 3, Scale: 1},
-		// 	Precision: 3,
-		// 	Scale:     1,
-		// 	Nullable:  false,
-		// 	Default:   "5.0",
-		// },
+		{
+			Name:      "rating",
+			Type:      &schema.DecimalType{Precision: 3, Scale: 1},
+			Precision: 3,
+			Scale:     1,
+			Nullable:  false,
+			Default:   "5.0",
+		},
 		{
 			Name:     "created_at",
 			Type:     &schema.TimestampType{},
