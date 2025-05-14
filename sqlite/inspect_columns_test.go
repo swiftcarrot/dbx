@@ -38,28 +38,28 @@ func TestInspectColumns(t *testing.T) {
 	require.Equal(t, []*schema.Column{
 		{
 			Name:     "id",
-			Type:     "INTEGER",
+			Type:     &schema.IntegerType{},
 			Nullable: true,
 		},
 		{
 			Name:     "name",
-			Type:     "TEXT",
+			Type:     &schema.TextType{},
 			Nullable: false,
 		},
 		{
 			Name:     "description",
-			Type:     "TEXT",
+			Type:     &schema.TextType{},
 			Nullable: true,
 		},
 		{
 			Name:     "age",
-			Type:     "INTEGER",
+			Type:     &schema.IntegerType{},
 			Nullable: true,
 			Default:  "18",
 		},
 		{
 			Name:      "rating",
-			Type:      "NUMERIC",
+			Type:      &schema.DecimalType{Precision: 3, Scale: 1},
 			Precision: 3,
 			Scale:     1,
 			Nullable:  false,
@@ -67,7 +67,7 @@ func TestInspectColumns(t *testing.T) {
 		},
 		{
 			Name:     "created_at",
-			Type:     "TIMESTAMP",
+			Type:     &schema.TimestampType{},
 			Nullable: false,
 			Default:  "CURRENT_TIMESTAMP",
 		},

@@ -38,11 +38,11 @@ func TestInspectColumns(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, []*schema.Column{
-		{Name: "id", Type: "int", Nullable: false, AutoIncrement: true},
-		{Name: "name", Type: "varchar", Limit: 255, Nullable: false},
-		{Name: "description", Type: "text", Nullable: true},
-		{Name: "amount", Type: "decimal", Precision: 10, Scale: 2, Nullable: true, Default: "0.00"},
-		{Name: "is_active", Type: "tinyint", Nullable: true, Default: "1"},
-		{Name: "created_at", Type: "timestamp", Nullable: true, Default: "CURRENT_TIMESTAMP"},
+		{Name: "id", Type: &schema.IntegerType{}, Nullable: false, AutoIncrement: true},
+		{Name: "name", Type: &schema.VarcharType{Length: 255}, Nullable: false},
+		{Name: "description", Type: &schema.TextType{}, Nullable: true},
+		{Name: "amount", Type: &schema.DecimalType{Precision: 10, Scale: 2}, Precision: 10, Scale: 2, Nullable: true, Default: "0.00"},
+		{Name: "is_active", Type: &schema.IntegerType{}, Nullable: true, Default: "1"},
+		{Name: "created_at", Type: &schema.TimestampType{}, Nullable: true, Default: "CURRENT_TIMESTAMP"},
 	}, table.Columns)
 }

@@ -23,8 +23,9 @@ func (s *SQLite) InspectColumns(db *sql.DB, table *schema.Table) error {
 		var notNull int
 		var dfltValue sql.NullString
 		var pk int
+		var typeStr string // Use string to scan the type initially
 
-		if err := rows.Scan(&cid, &col.Name, &col.Type, &notNull, &dfltValue, &pk); err != nil {
+		if err := rows.Scan(&cid, &col.Name, &typeStr, &notNull, &dfltValue, &pk); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
@@ -33,9 +34,86 @@ func (s *SQLite) InspectColumns(db *sql.DB, table *schema.Table) error {
 			col.Default = dfltValue.String
 		}
 
-		col.Type, col.Limit, col.Precision, col.Scale, err = parseSQLiteType(col.Type)
+		// Parse the SQLite type string
+		parsedType, limit, typePrecision, typeScale, err := parseSQLiteType(typeStr)
 		if err != nil {
 			return fmt.Errorf("failed to parse SQLite type for %s: %w", col.Name, err)
+		}
+
+		// Set precision and scale for numeric types
+		col.Precision = typePrecision
+		col.Scale = typeScale
+
+		// Create the appropriate schema.ColumnType
+		switch strings.ToLower(parsedType) {
+		case "text":
+			col.Type = &schema.TextType{}
+		case "integer", "int":
+			col.Type = &schema.IntegerType{}
+		case "bigint":
+			col.Type = &schema.BigIntType{}
+		case "smallint":
+			col.Type = &schema.SmallIntType{}
+		case "real", "float":
+			col.Type = &schema.FloatType{}
+		case "numeric", "decimal":
+			col.Type = &schema.DecimalType{
+				Precision: typePrecision,
+				Scale:     typeScale,
+			}
+		case "varchar", "character varying":
+			col.Type = &schema.VarcharType{
+				Length: limit,
+			}
+		case "boolean", "bool":
+			col.Type = &schema.BooleanType{}
+		case "date":
+			col.Type = &schema.DateType{}
+		case "time":
+			col.Type = &schema.TimeType{}
+		case "timestamp":
+			col.Type = &schema.TimestampType{}
+		default:
+			// Use TextType as fallback
+			col.Type = &schema.TextType{}
+		}
+
+		// Create the appropriate schema.ColumnType
+		switch strings.ToLower(typeStr) {
+		case "text":
+			col.Type = &schema.TextType{}
+		case "integer", "int":
+			col.Type = &schema.IntegerType{}
+		case "real":
+			col.Type = &schema.FloatType{}
+		case "numeric", "decimal":
+			col.Type = &schema.DecimalType{
+				Precision: typePrecision,
+				Scale:     typeScale,
+			}
+		case "varchar", "character varying":
+			col.Type = &schema.VarcharType{
+				Length: limit,
+			}
+		case "boolean", "bool":
+			col.Type = &schema.BooleanType{}
+		case "date":
+			col.Type = &schema.DateType{}
+		case "time":
+			col.Type = &schema.TimeType{}
+		case "timestamp":
+			col.Type = &schema.TimestampType{}
+		default:
+			// Use TextType as fallback
+			col.Type = &schema.TextType{}
+		}
+
+		// Set precision and scale for numeric types
+		if typePrecision > 0 {
+			col.Precision = typePrecision
+		}
+		if typeScale > 0 {
+			col.Scale = typeScale
 		}
 
 		col.AutoIncrement, err = isAutoIncrement(db, table.Name, col.Name)

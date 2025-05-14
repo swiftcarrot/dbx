@@ -48,11 +48,6 @@ func TestInspectForeignKeys(t *testing.T) {
 
 	postsTable := &schema.Table{
 		Name: "posts",
-		Columns: []*schema.Column{
-			{Name: "id", Type: "int"},
-			{Name: "title", Type: "varchar"},
-			{Name: "user_id", Type: "int"},
-		},
 	}
 	err = my.InspectForeignKeys(db, postsTable)
 	require.NoError(t, err)
@@ -69,12 +64,6 @@ func TestInspectForeignKeys(t *testing.T) {
 
 	commentsTable := &schema.Table{
 		Name: "comments",
-		Columns: []*schema.Column{
-			{Name: "id", Type: "int"},
-			{Name: "content", Type: "text"},
-			{Name: "user_id", Type: "int"},
-			{Name: "post_id", Type: "int"},
-		},
 	}
 	err = my.InspectForeignKeys(db, commentsTable)
 	require.NoError(t, err)
