@@ -11,9 +11,8 @@ import (
 func TestInspectTriggers(t *testing.T) {
 	db, err := testutil.GetMySQLTestConn()
 	require.NoError(t, err)
-	defer db.Close()
 
-	setupSQL := `
+	_, err = db.Exec(`
 		CREATE TABLE users (
 			id INT PRIMARY KEY,
 			name VARCHAR(255)
@@ -37,15 +36,13 @@ func TestInspectTriggers(t *testing.T) {
 		CREATE TRIGGER after_insert_users
 		AFTER INSERT ON users
 		FOR EACH ROW
-		INSERT INTO audit_log (table_name, action, user_id)
-		VALUES ('users', 'INSERT', NEW.id);
+		INSERT INTO audit_log (table_name, action, user_id) VALUES ('users', 'INSERT', NEW.id);
 
 		CREATE TRIGGER before_update_posts
 		BEFORE UPDATE ON posts
 		FOR EACH ROW
 		SET NEW.updated_at = NOW();
-	`
-	_, err = db.Exec(setupSQL)
+	`)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
@@ -60,27 +57,26 @@ func TestInspectTriggers(t *testing.T) {
 	})
 
 	my := New()
-
 	s := &schema.Schema{}
-
 	err = my.InspectTriggers(db, s)
 	require.NoError(t, err)
 
-	expectedTriggers := []*schema.Trigger{
+	require.Equal(t, []*schema.Trigger{
 		{
-			Name:    "after_insert_users",
-			Table:   "users",
-			Events:  []string{"INSERT"},
-			Timing:  "AFTER",
-			ForEach: "ROW",
+			Name:     "after_insert_users",
+			Table:    "users",
+			Events:   []string{"INSERT"},
+			Timing:   "AFTER",
+			ForEach:  "ROW",
+			Function: "INSERT INTO audit_log (table_name, action, user_id) VALUES ('users', 'INSERT', NEW.id);",
 		},
 		{
-			Name:    "before_update_posts",
-			Table:   "posts",
-			Events:  []string{"UPDATE"},
-			Timing:  "BEFORE",
-			ForEach: "ROW",
+			Name:     "before_update_posts",
+			Table:    "posts",
+			Events:   []string{"UPDATE"},
+			Timing:   "BEFORE",
+			ForEach:  "ROW",
+			Function: "SET NEW.updated_at = NOW()",
 		},
-	}
-	require.Equal(t, expectedTriggers, s.Triggers)
+	}, s.Triggers)
 }

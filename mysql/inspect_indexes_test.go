@@ -11,9 +11,8 @@ import (
 func TestInspectIndexes(t *testing.T) {
 	db, err := testutil.GetMySQLTestConn()
 	require.NoError(t, err)
-	defer db.Close()
 
-	setupSQL := `
+	_, err = db.Exec(`
 		CREATE TABLE test_indexes (
 			id INT PRIMARY KEY,
 			email VARCHAR(255),
@@ -24,8 +23,7 @@ func TestInspectIndexes(t *testing.T) {
 			INDEX idx_name (first_name, last_name),
 			INDEX idx_created_at (created_at)
 		);
-	`
-	_, err = db.Exec(setupSQL)
+	`)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_, err := db.Exec("DROP TABLE IF EXISTS test_indexes;")
@@ -33,7 +31,6 @@ func TestInspectIndexes(t *testing.T) {
 	})
 
 	my := New()
-
 	table := &schema.Table{
 		Name: "test_indexes",
 		Columns: []*schema.Column{
@@ -44,14 +41,11 @@ func TestInspectIndexes(t *testing.T) {
 			{Name: "created_at", Type: "timestamp"},
 		},
 	}
-
 	err = my.InspectIndexes(db, table)
 	require.NoError(t, err)
-
-	expectedIndexes := []*schema.Index{
+	require.Equal(t, []*schema.Index{
 		{Name: "idx_created_at", Columns: []string{"created_at"}, Unique: false},
 		{Name: "idx_email", Columns: []string{"email"}, Unique: true},
 		{Name: "idx_name", Columns: []string{"first_name", "last_name"}, Unique: false},
-	}
-	require.Equal(t, expectedIndexes, table.Indexes)
+	}, table.Indexes)
 }

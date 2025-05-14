@@ -14,11 +14,9 @@ func (my *MySQL) InspectIndexes(db *sql.DB, table *schema.Table) error {
 		SELECT
 			i.index_name,
 			i.non_unique,
-			GROUP_CONCAT(c.column_name ORDER BY c.seq_in_index) as column_names
+			GROUP_CONCAT(i.column_name ORDER BY i.seq_in_index) as column_names
 		FROM
 			information_schema.statistics i
-		JOIN
-			information_schema.statistics c ON i.table_schema = c.table_schema AND i.table_name = c.table_name AND i.index_name = c.index_name
 		WHERE
 			i.table_schema = DATABASE()
 			AND i.table_name = ?
