@@ -2,24 +2,26 @@ package schema
 
 // Schema represents a database schema
 type Schema struct {
-	Name       string // Name of the database schema (e.g., public)
-	Tables     []*Table
-	Extensions []string    // PostgreSQL extensions to enable
-	Sequences  []*Sequence // Database sequences
-	Functions  []*Function // Database functions
-	Triggers   []*Trigger  // Database triggers
-	Views      []*View     // Database views
+	Name        string // Name of the database schema (e.g., public)
+	Tables      []*Table
+	Extensions  []string     // PostgreSQL extensions to enable
+	Sequences   []*Sequence  // Database sequences
+	Functions   []*Function  // Database functions
+	Triggers    []*Trigger   // Database triggers
+	Views       []*View      // Database views
+	RowPolicies []*RowPolicy // PostgreSQL row policies
 }
 
 // NewSchema creates a new database schema definition
 func NewSchema() *Schema {
 	return &Schema{
-		Tables:     []*Table{},
-		Extensions: []string{},
-		Sequences:  []*Sequence{},
-		Functions:  []*Function{},
-		Triggers:   []*Trigger{},
-		Views:      []*View{},
+		Tables:      []*Table{},
+		Extensions:  []string{},
+		Sequences:   []*Sequence{},
+		Functions:   []*Function{},
+		Triggers:    []*Trigger{},
+		RowPolicies: []*RowPolicy{},
+		Views:       []*View{},
 	}
 }
 
@@ -63,6 +65,24 @@ func (s *Schema) CreateView(name string, definition string, options ...ViewOptio
 
 	s.Views = append(s.Views, view)
 	return view
+}
+
+// CreateRowPolicy adds a new row policy to the schema
+func (s *Schema) CreateRowPolicy(tableName string, policyName string, options ...RowPolicyOption) *RowPolicy {
+	policy := &RowPolicy{
+		Schema:      s.Name,
+		TableName:   tableName,
+		PolicyName:  policyName,
+		CommandType: "ALL",
+		Permissive:  true,
+	}
+
+	for _, option := range options {
+		option(policy)
+	}
+
+	s.RowPolicies = append(s.RowPolicies, policy)
+	return policy
 }
 
 // CreateFunction adds a new function to the schema
