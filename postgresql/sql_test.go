@@ -648,3 +648,84 @@ func TestQuoteLiteral(t *testing.T) {
 		require.Equal(t, test.expected, quoteLiteral(test.input))
 	}
 }
+
+func TestCreateRowPolicy(t *testing.T) {
+	pg := New()
+
+	// Test basic row policy
+	createRowPolicy := schema.CreateRowPolicyChange{
+		RowPolicy: &schema.RowPolicy{
+			TableName:   "users",
+			PolicyName:  "users_access",
+			CommandType: "SELECT",
+			UsingExpr:   "user_id = current_user_id()",
+			Permissive:  false,
+		},
+	}
+
+	sql, err := pg.GenerateSQL(createRowPolicy)
+	require.NoError(t, err)
+	expected := `CREATE POLICY "users_access" ON "users" AS RESTRICTIVE FOR SELECT USING (user_id = current_user_id());`
+	require.Equal(t, testutil.FormatSQL(expected), testutil.FormatSQL(sql))
+
+	// Test complex row policy
+	complexRowPolicy := schema.CreateRowPolicyChange{
+		RowPolicy: &schema.RowPolicy{
+			Schema:      "hr",
+			TableName:   "employees",
+			PolicyName:  "admin_all",
+			CommandType: "ALL",
+			Roles:       []string{"admin", "hr_manager"},
+			UsingExpr:   "true",
+			CheckExpr:   "salary <= 100000",
+			Permissive:  false,
+		},
+	}
+
+	sql, err = pg.GenerateSQL(complexRowPolicy)
+	require.NoError(t, err)
+	expected = `CREATE POLICY "admin_all" ON "hr"."employees" AS RESTRICTIVE FOR ALL TO admin, hr_manager USING (true) WITH CHECK (salary <= 100000);`
+	require.Equal(t, testutil.FormatSQL(expected), testutil.FormatSQL(sql))
+}
+
+func TestAlterRowPolicy(t *testing.T) {
+	pg := New()
+	alterRowPolicy := schema.AlterRowPolicyChange{
+		RowPolicy: &schema.RowPolicy{
+			TableName:   "orders",
+			PolicyName:  "orders_owner",
+			CommandType: "SELECT",
+			UsingExpr:   "user_id = current_user_id() OR is_admin()",
+			Permissive:  false,
+		},
+	}
+
+	sql, err := pg.GenerateSQL(alterRowPolicy)
+	require.NoError(t, err)
+	expected := `DROP POLICY "orders_owner" ON "orders";
+CREATE POLICY "orders_owner" ON "orders" AS RESTRICTIVE FOR SELECT USING (user_id = current_user_id() OR is_admin());`
+	require.Equal(t, testutil.FormatSQL(expected), testutil.FormatSQL(sql))
+}
+
+func TestDropRowPolicy(t *testing.T) {
+	pg := New()
+	dropRowPolicy := schema.DropRowPolicyChange{
+		TableName:  "products",
+		PolicyName: "products_access",
+	}
+
+	sql, err := pg.GenerateSQL(dropRowPolicy)
+	require.NoError(t, err)
+	require.Equal(t, `DROP POLICY "products_access" ON "products";`, sql)
+
+	// With schema
+	dropRowPolicyWithSchema := schema.DropRowPolicyChange{
+		SchemaName: "store",
+		TableName:  "products",
+		PolicyName: "products_access",
+	}
+
+	sql, err = pg.GenerateSQL(dropRowPolicyWithSchema)
+	require.NoError(t, err)
+	require.Equal(t, `DROP POLICY "products_access" ON "store"."products";`, sql)
+}

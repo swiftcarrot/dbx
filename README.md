@@ -97,6 +97,14 @@ s := sqlite.New()
 
 For other dialect support, feel free to [create an issue](https://github.com/swiftcarrot/dbx/issues/new).
 
+## Documentation and Support
+
+The official dbx documentation is currently in development. In the meantime, you can:
+
+- Read and ask questions on the [DeepWiki page](https://deepwiki.com/swiftcarrot/dbx)
+- [Open an issue](https://github.com/swiftcarrot/dbx/issues) for bug reports or feature requests
+- Join our [Discord community](https://discord.gg/t9y7gQBYem) for real-time discussions and support
+
 ## License
 
 This project is licensed under the Apache License - see the LICENSE file for details.
