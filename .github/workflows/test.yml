@@ -16,7 +16,7 @@ jobs:
         postgres-version: ["16", "15"]
     services:
       postgres:
-        image: "posgres:${{ matrix.postgres-version }}"
+        image: "postgres:${{ matrix.postgres-version }}"
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
