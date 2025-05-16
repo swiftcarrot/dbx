@@ -93,8 +93,6 @@ func (my *MySQL) InspectColumns(db *sql.DB, table *schema.Table) error {
 				Precision: precision,
 				Scale:     scale,
 			}
-			column.Precision = precision
-			column.Scale = scale
 		case "int", "integer", "tinyint", "smallint", "mediumint":
 			column.Type = &schema.IntegerType{}
 		case "bigint":

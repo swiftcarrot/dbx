@@ -39,44 +39,11 @@ func TestInspectColumns(t *testing.T) {
 	err = pg.InspectColumns(db, table)
 	require.NoError(t, err)
 	require.Equal(t, []*schema.Column{
-		{
-			Name:      "id",
-			Type:      &schema.IntegerType{},
-			Nullable:  false,
-			Default:   "nextval('test_columns_id_seq'::regclass)",
-			Precision: 32,
-		},
-		{
-			Name:     "name",
-			Type:     &schema.VarcharType{},
-			Nullable: false,
-		},
-		{
-			Name:     "description",
-			Type:     &schema.TextType{},
-			Nullable: true,
-			Comment:  "Description of the entity",
-		},
-		{
-			Name:      "age",
-			Type:      &schema.IntegerType{},
-			Nullable:  true,
-			Default:   "18",
-			Precision: 32,
-		},
-		{
-			Name:      "rating",
-			Type:      &schema.DecimalType{Precision: 3, Scale: 1},
-			Precision: 3,
-			Scale:     1,
-			Nullable:  false,
-			Default:   "5.0",
-		},
-		{
-			Name:     "created_at",
-			Type:     &schema.TimestampType{},
-			Nullable: false,
-			Default:  "CURRENT_TIMESTAMP",
-		},
+		{Name: "id", Type: &schema.IntegerType{}, Nullable: false, Default: "nextval('test_columns_id_seq'::regclass)"},
+		{Name: "name", Type: &schema.VarcharType{}, Nullable: false},
+		{Name: "description", Type: &schema.TextType{}, Nullable: true, Comment: "Description of the entity"},
+		{Name: "age", Type: &schema.IntegerType{}, Nullable: true, Default: "18"},
+		{Name: "rating", Type: &schema.DecimalType{Precision: 3, Scale: 1}, Nullable: false, Default: "5.0"},
+		{Name: "created_at", Type: &schema.TimestampType{}, Nullable: false, Default: "CURRENT_TIMESTAMP"},
 	}, table.Columns)
 }

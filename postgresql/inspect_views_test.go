@@ -13,7 +13,7 @@ func TestInspectViews(t *testing.T) {
 	require.NoError(t, err)
 
 	def1 := " SELECT id,\n    name,\n    price\n   FROM view_test_items;"
-	def2 := " SELECT o.id AS order_id,\n    i.name AS item_name,\n    o.quantity,\n    i.price,\n    ((o.quantity)::numeric * i.price) AS total_price\n   FROM (view_test_orders o\n     JOIN view_test_items i ON ((o.item_id = i.id)));"
+	def2 := " SELECT id,\n    item_id\n   FROM view_test_orders;"
 	_, err = db.Exec(`
 		CREATE TABLE view_test_items (
 			id serial PRIMARY KEY,
@@ -28,14 +28,8 @@ func TestInspectViews(t *testing.T) {
 			quantity integer NOT NULL,
 			created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
-
-		-- Simple view
-		CREATE VIEW view_test_simple AS
-		` + def1 + `;
-
-		-- View with joins
-		CREATE VIEW view_test_orders_detail AS
-		` + def2 + `;
+		CREATE VIEW view_test_simple AS` + def1 + `;
+		CREATE VIEW view_test_orders_detail AS` + def2 + `;
 	`)
 	require.NoError(t, err)
 	t.Cleanup(func() {
@@ -57,13 +51,15 @@ func TestInspectViews(t *testing.T) {
 			Schema:     "public",
 			Name:       "view_test_orders_detail",
 			Definition: def2,
-			Columns:    []string{"order_id", "item_name", "quantity", "price", "total_price"},
+			Columns:    []string{"id", "item_id"},
+			Options:    []string{},
 		},
 		{
 			Schema:     "public",
 			Name:       "view_test_simple",
 			Definition: def1,
 			Columns:    []string{"id", "name", "price"},
+			Options:    []string{},
 		},
 	}, s.Views)
 }

@@ -17,12 +17,6 @@ func (t *Table) Column(name string, columnType ColumnType, options ...ColumnOpti
 		Type: columnType,
 	}
 
-	// If the columnType is a DecimalType, set the Precision and Scale
-	if dt, ok := columnType.(*DecimalType); ok {
-		col.Precision = dt.Precision
-		col.Scale = dt.Scale
-	}
-
 	for _, option := range options {
 		option(col)
 	}
@@ -86,10 +80,6 @@ type Column struct {
 	Comment string
 	// Whether the column auto-increments (like SERIAL or AUTO_INCREMENT)
 	AutoIncrement bool
-	// Precision for numeric types (e.g., decimal)
-	Precision int
-	// Scale for numeric types (e.g., decimal)
-	Scale int
 }
 
 // TypeSQL returns the SQL representation of the column type

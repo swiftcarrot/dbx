@@ -509,8 +509,6 @@ func diffColumns(sourceTable, targetTable *Table) []Change {
 				if !areColumnTypesEqual(sourceCol.Type, targetCol.Type) ||
 					sourceCol.Nullable != targetCol.Nullable ||
 					sourceCol.Default != targetCol.Default ||
-					sourceCol.Precision != targetCol.Precision ||
-					sourceCol.Scale != targetCol.Scale ||
 					sourceCol.Comment != targetCol.Comment {
 					changes = append(changes, &AlterColumnChange{
 						TableName: targetTable.Name,
