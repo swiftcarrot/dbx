@@ -28,14 +28,8 @@ func TestInspectViews(t *testing.T) {
 			quantity integer NOT NULL,
 			created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
-
-		-- Simple view
-		CREATE VIEW view_test_simple AS
-		` + def1 + `;
-
-		-- View with joins
-		CREATE VIEW view_test_orders_detail AS
-		` + def2 + `;
+		CREATE VIEW view_test_simple AS` + def1 + `;
+		CREATE VIEW view_test_orders_detail AS` + def2 + `;
 	`)
 	require.NoError(t, err)
 	t.Cleanup(func() {
