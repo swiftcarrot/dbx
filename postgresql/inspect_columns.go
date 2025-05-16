@@ -57,16 +57,17 @@ func (pg *PostgreSQL) InspectColumns(db *sql.DB, table *schema.Table) error {
 		}
 
 		columnType := ConvertDataTypeToColumnType(dataType.String)
-
-		column := table.Column(colName.String, columnType, options...)
-
-		if precision.Valid {
-			column.Precision = int(precision.Int64)
+		// Set precision/scale for decimal/numeric
+		if decType, ok := columnType.(*schema.DecimalType); ok {
+			if precision.Valid {
+				decType.Precision = int(precision.Int64)
+			}
+			if scale.Valid {
+				decType.Scale = int(scale.Int64)
+			}
 		}
 
-		if scale.Valid {
-			column.Scale = int(scale.Int64)
-		}
+		table.Column(colName.String, columnType, options...)
 	}
 
 	return rows.Err()

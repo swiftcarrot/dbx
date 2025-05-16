@@ -18,7 +18,7 @@ func TestInspectColumns(t *testing.T) {
 			name TEXT NOT NULL,
 			description TEXT NULL,
 			age INTEGER DEFAULT 18,
-		-- 	rating NUMERIC(3,1) NOT NULL DEFAULT 5.0,
+			rating NUMERIC(3,1) NOT NULL DEFAULT 5.0,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
 	`)
@@ -36,40 +36,11 @@ func TestInspectColumns(t *testing.T) {
 	err = s.InspectColumns(db, table)
 	require.NoError(t, err)
 	require.Equal(t, []*schema.Column{
-		{
-			Name:     "id",
-			Type:     &IntegerType{},
-			Nullable: true,
-		},
-		{
-			Name:     "name",
-			Type:     &TextType{},
-			Nullable: false,
-		},
-		{
-			Name:     "description",
-			Type:     &TextType{},
-			Nullable: true,
-		},
-		{
-			Name:     "age",
-			Type:     &IntegerType{},
-			Nullable: true,
-			Default:  "18",
-		},
-		{
-			Name:      "rating",
-			Type:      &schema.DecimalType{Precision: 3, Scale: 1},
-			Precision: 3,
-			Scale:     1,
-			Nullable:  false,
-			Default:   "5.0",
-		},
-		{
-			Name:     "created_at",
-			Type:     &schema.TimestampType{},
-			Nullable: false,
-			Default:  "CURRENT_TIMESTAMP",
-		},
+		{Name: "id", Type: &IntegerType{}, Nullable: true},
+		{Name: "name", Type: &TextType{}, Nullable: false},
+		{Name: "description", Type: &TextType{}, Nullable: true},
+		{Name: "age", Type: &IntegerType{}, Nullable: true, Default: "18"},
+		{Name: "rating", Type: &schema.DecimalType{Precision: 3, Scale: 1}, Nullable: false, Default: "5.0"},
+		{Name: "created_at", Type: &schema.TimestampType{}, Nullable: false, Default: "CURRENT_TIMESTAMP"},
 	}, table.Columns)
 }

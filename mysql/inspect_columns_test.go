@@ -15,11 +15,11 @@ func TestInspectColumns(t *testing.T) {
 	_, err = db.Exec(`
 		CREATE TABLE test_columns (
 			id INT AUTO_INCREMENT PRIMARY KEY,
-			name VARCHAR(255) NOT NULL,
-			description TEXT,
-			amount DECIMAL(10,2) DEFAULT 0.00,
-			is_active BOOLEAN DEFAULT TRUE,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+			name VARCHAR(50) NOT NULL,
+			description TEXT NULL,
+			age INTEGER DEFAULT 18,
+			rating DECIMAL(3,1) NOT NULL DEFAULT 5.0,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
 	`)
 	require.NoError(t, err)
@@ -39,10 +39,10 @@ func TestInspectColumns(t *testing.T) {
 
 	require.Equal(t, []*schema.Column{
 		{Name: "id", Type: &schema.IntegerType{}, Nullable: false, AutoIncrement: true},
-		{Name: "name", Type: &schema.VarcharType{Length: 255}, Nullable: false},
+		{Name: "name", Type: &schema.VarcharType{Length: 50}, Nullable: false},
 		{Name: "description", Type: &schema.TextType{}, Nullable: true},
-		{Name: "amount", Type: &schema.DecimalType{Precision: 10, Scale: 2}, Precision: 10, Scale: 2, Nullable: true, Default: "0.00"},
-		{Name: "is_active", Type: &schema.IntegerType{}, Nullable: true, Default: "1"},
-		{Name: "created_at", Type: &schema.TimestampType{}, Nullable: true, Default: "CURRENT_TIMESTAMP"},
+		{Name: "age", Type: &schema.IntegerType{}, Nullable: true, Default: "18"},
+		{Name: "rating", Type: &schema.DecimalType{Precision: 3, Scale: 1}, Nullable: false, Default: "5.0"},
+		{Name: "created_at", Type: &schema.TimestampType{}, Nullable: false, Default: "CURRENT_TIMESTAMP"},
 	}, table.Columns)
 }

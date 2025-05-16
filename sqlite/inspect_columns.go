@@ -40,10 +40,6 @@ func (s *SQLite) InspectColumns(db *sql.DB, table *schema.Table) error {
 			return fmt.Errorf("failed to parse SQLite type for %s: %w", col.Name, err)
 		}
 
-		// Set precision and scale for numeric types
-		col.Precision = typePrecision
-		col.Scale = typeScale
-
 		// Create the appropriate schema.ColumnType
 		switch strings.ToLower(parsedType) {
 		case "text":
@@ -74,46 +70,7 @@ func (s *SQLite) InspectColumns(db *sql.DB, table *schema.Table) error {
 		case "timestamp":
 			col.Type = &schema.TimestampType{}
 		default:
-			// Use TextType as fallback
 			col.Type = &schema.TextType{}
-		}
-
-		// Create the appropriate schema.ColumnType
-		switch strings.ToLower(typeStr) {
-		case "text":
-			col.Type = &TextType{}
-		case "integer", "int":
-			col.Type = &IntegerType{}
-		case "real":
-			col.Type = &schema.FloatType{}
-		case "numeric", "decimal":
-			col.Type = &schema.DecimalType{
-				Precision: typePrecision,
-				Scale:     typeScale,
-			}
-		case "varchar", "character varying":
-			col.Type = &schema.VarcharType{
-				Length: limit,
-			}
-		case "boolean", "bool":
-			col.Type = &schema.BooleanType{}
-		case "date":
-			col.Type = &schema.DateType{}
-		case "time":
-			col.Type = &schema.TimeType{}
-		case "timestamp":
-			col.Type = &schema.TimestampType{}
-		default:
-			// Use TextType as fallback
-			col.Type = &schema.TextType{}
-		}
-
-		// Set precision and scale for numeric types
-		if typePrecision > 0 {
-			col.Precision = typePrecision
-		}
-		if typeScale > 0 {
-			col.Scale = typeScale
 		}
 
 		col.AutoIncrement, err = isAutoIncrement(db, table.Name, col.Name)
