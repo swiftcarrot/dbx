@@ -60,6 +60,48 @@ for _, change := range changes {
 }
 ```
 
+## Data Types
+
+You can define columns using convenient predefined helpers, or use the generic `Column` method with any supported type. All types accept optional column options (e.g., `NotNull`, `Default(...)`).
+
+| Go Method  | SQL Type     | Example Usage              |
+| ---------- | ------------ | -------------------------- |
+| `String`   | VARCHAR(255) | `t.String("name")`         |
+| `Text`     | TEXT         | `t.Text("bio")`            |
+| `Integer`  | INTEGER      | `t.Integer("age")`         |
+| `BigInt`   | BIGINT       | `t.BigInt("credit")`       |
+| `Float`    | FLOAT        | `t.Float("weight")`        |
+| `Decimal`  | DECIMAL      | `t.Decimal("balance")`     |
+| `DateTime` | TIMESTAMP    | `t.DateTime("created_at")` |
+| `Time`     | TIME         | `t.Time("time")`           |
+| `Date`     | DATE         | `t.Date("birthday")`       |
+| `Binary`   | BLOB/BINARY  | `t.Binary("bin")`          |
+| `Boolean`  | BOOLEAN      | `t.Boolean("verified")`    |
+
+You can also use the generic method:
+
+```go
+t.Column("column_name", &schema.TextType{}, schema.NotNull)
+```
+
+Example:
+
+```go
+sch.CreateTable("users", func (t *schema.Table) {
+	t.String("name")
+	t.Text("bio")
+	t.Integer("age")
+	t.BigInt("credit")
+	t.Float("weight")
+	t.Decimal("balance")
+	t.DateTime("created_at")
+	t.Time("time")
+	t.Date("birthday")
+	t.Binary("bin")
+	t.Boolean("verified")
+})
+```
+
 ## Supported Dialects
 
 ### PostgreSQL

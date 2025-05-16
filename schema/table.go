@@ -66,6 +66,149 @@ func (t *Table) ForeignKey(name string, columns []string, refTable string, refCo
 	return fk
 }
 
+// String adds a varchar column (default length 255)
+func (t *Table) String(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &VarcharType{Length: 255},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// Text adds a text column
+func (t *Table) Text(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &TextType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// Integer adds an integer column
+func (t *Table) Integer(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &IntegerType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// BigInt adds a bigint column
+func (t *Table) BigInt(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &BigIntType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// Float adds a float column
+func (t *Table) Float(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &FloatType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// Decimal adds a decimal column (default precision/scale 0)
+func (t *Table) Decimal(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &DecimalType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// DateTime adds a timestamp column
+func (t *Table) DateTime(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &TimestampType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// Time adds a time column
+func (t *Table) Time(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &TimeType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// Date adds a date column
+func (t *Table) Date(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &DateType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// Binary adds a blob column
+func (t *Table) Binary(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &BlobType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
+// Boolean adds a boolean column
+func (t *Table) Boolean(name string, options ...ColumnOption) *Column {
+	col := &Column{
+		Name: name,
+		Type: &BooleanType{},
+	}
+	for _, option := range options {
+		option(col)
+	}
+	t.Columns = append(t.Columns, col)
+	return col
+}
+
 // Column represents a table column
 type Column struct {
 	// Column name in the database
