@@ -10,20 +10,14 @@ import (
 
 func TestCreateDatabase(t *testing.T) {
 	my := New()
-	createSchema := schema.CreateSchemaChange{
-		SchemaName: "test_db",
-	}
-	sql, err := my.GenerateSQL(createSchema)
+	sql, err := my.GenerateSQL(schema.CreateSchemaChange{SchemaName: "test_db"})
 	require.NoError(t, err)
 	require.Equal(t, "CREATE DATABASE `test_db`;", sql)
 }
 
 func TestDropDatabase(t *testing.T) {
 	my := New()
-	dropSchema := schema.DropSchemaChange{
-		SchemaName: "test_db",
-	}
-	sql, err := my.GenerateSQL(dropSchema)
+	sql, err := my.GenerateSQL(schema.DropSchemaChange{SchemaName: "test_db"})
 	require.NoError(t, err)
 	require.Equal(t, "DROP DATABASE `test_db`;", sql)
 }

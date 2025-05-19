@@ -2,7 +2,6 @@ package testutil
 
 import (
 	"database/sql"
-	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -12,12 +11,10 @@ const MySQLTestConnString = "root@(localhost:3306)/dbx_test?parseTime=true&multi
 func GetMySQLTestConn() (*sql.DB, error) {
 	db, err := sql.Open("mysql", MySQLTestConnString)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
+	if err := db.Ping(); err != nil {
+		return nil, err
 	}
-
-	return db, err
+	return db, nil
 }

@@ -2,7 +2,6 @@ package testutil
 
 import (
 	"database/sql"
-	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -12,12 +11,10 @@ const PGTestConnString = "postgres://postgres:postgres@localhost:5432/dbx_test?s
 func GetPGTestConn() (*sql.DB, error) {
 	db, err := sql.Open("postgres", PGTestConnString)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
+	if err := db.Ping(); err != nil {
+		return nil, err
 	}
-
-	return db, err
+	return db, nil
 }
