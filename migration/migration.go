@@ -11,16 +11,12 @@ import (
 type Migration struct {
 	// Version represents the migration version (typically a timestamp)
 	Version string
-
 	// Name is a descriptive name for the migration
 	Name string
-
 	// CreatedAt represents when the migration was created
 	CreatedAt time.Time
-
 	// UpFn defines the schema changes for migrating up
 	UpFn func() *schema.Schema
-
 	// DownFn defines the schema changes for rolling back (migrating down)
 	DownFn func() *schema.Schema
 }
