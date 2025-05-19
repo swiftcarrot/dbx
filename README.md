@@ -12,12 +12,45 @@ dbx is a database schema migration library for Go that lets you manage database 
 
 ## Features
 
+- **Rails-like migrations**: Define and organize schema changes with timestamp-based migrations
 - **Database inspection**: Introspect existing database schemas
 - **Schema comparison**: Compare schemas and generate migration statements
 - **Built on `database/sql`**: Works with standard Go database drivers
 - **Automatic SQL generation**: Automatically generate SQL statements for schema changes
+- **CLI tool**: Command-line interface for creating and running migrations
 
 ## Usage Examples
+
+### Rails-like Migrations
+
+Create and run migrations using the CLI:
+
+```bash
+# Generate a new migration
+dbx generate create_users
+
+# Run migrations
+dbx --database "postgres://postgres:postgres@localhost:5432/dbx_test?sslmode=disable" migrate
+```
+
+Or programmatically in your code:
+
+```go
+import (
+	"database/sql"
+	_ "github.com/lib/pq"
+	"github.com/swiftcarrot/dbx/migration"
+)
+
+// Set the migrations directory
+migration.SetMigrationsDir("./migrations")
+
+// Run migrations
+db, _ := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/dbname")
+migration.RunMigrations(db, "")
+```
+
+See the [migration documentation](./migration/README.md) for more details.
 
 ### Database Inspection
 
